@@ -4,12 +4,13 @@
 
 import UIKit
 
-class DetailViewController: UIViewController, UITextFieldDelegate {
+class DetailViewController: UIViewController, UITextFieldDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
     
     @IBOutlet var nameField: UITextField!
     @IBOutlet var serialNumberField: UITextField!
     @IBOutlet var valueField: UITextField!
     @IBOutlet var dateLabel: UILabel!
+    @IBOutlet weak var imageView: UIImageView!
     
     var item: Item! {
         didSet {
@@ -32,6 +33,8 @@ class DetailViewController: UIViewController, UITextFieldDelegate {
         return formatter
     }()
     
+    
+    //MARK:- View Life Cycle
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
@@ -59,6 +62,34 @@ class DetailViewController: UIViewController, UITextFieldDelegate {
         }
     }
     
+    //MARK:- Camera
+    @IBAction func takePicture(_ sender: UIBarButtonItem) {
+        let imagePicker = UIImagePickerController()
+        
+        // If the device has a camera, take a picture. Otherwise just pick one from the photo library.
+        if UIImagePickerController.isSourceTypeAvailable(.camera) {
+            imagePicker.sourceType = .camera
+        } else {
+            imagePicker.sourceType = .photoLibrary
+        }
+        imagePicker.delegate = self
+        //place image picker on the screen
+        present(imagePicker, animated: true, completion: nil)
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String: Any]) {
+        
+        // Get picked image from the dictionary
+        let image = info[UIImagePickerControllerOriginalImage] as! UIImage
+        // Put that image on the screen in the image view.
+        imageView.image = image
+        //Take image picker on the screen -
+        // You must call this dismiss method
+        dismiss(animated: true, completion: nil)
+        
+    }
+    
+    
     //MARK:- Keyboard Dismiss
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
@@ -70,7 +101,4 @@ class DetailViewController: UIViewController, UITextFieldDelegate {
     @IBAction func backgroundTap(_ sender: UITapGestureRecognizer) {
     view.endEditing(true)
     }
-    
-    
-    
 }
